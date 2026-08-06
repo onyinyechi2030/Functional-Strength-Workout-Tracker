@@ -1,16 +1,14 @@
-# Strength Workout Tracker — Version 9.1
+# Strength Workout Tracker — Version 10
 
-GitHub Pages-ready, local-first strength workout tracker.
+A local-first workout tracker for a five-day strength program with Thursday and Sunday recovery tracking.
 
-## Version 9.1 substitution support
-- Substitute any programmed exercise with another library movement or a manually entered exercise.
-- The original programmed movement remains displayed for context.
-- The replacement inherits the scheduled set slots, and every completed replacement set counts toward the day’s completion percentage.
-- Add or remove replacement sets as needed.
-- Restore the original exercise at any time.
-- Substitutions are saved in workout history and JSON backups.
+## Weekly schedule
+- Monday: 60-minute full-body foundation strength
+- Tuesday: 45-minute upper pull, posture, arms and core
+- Wednesday: 60-minute lower body and posterior chain
+- Thursday: recovery — yoga, yin yoga, walking and mobility
+- Friday: 45-minute upper push, posture, arms and calves
+- Saturday: 60-minute full-body functional performance
+- Sunday: recovery — yoga, yin yoga, walking and mobility
 
-Deploy using GitHub Pages: `main` branch and `/ (root)`. Workout records remain in browser local storage.
-
-
-Version 9.1 fixes the substitution renderer and preserves all programmed exercises when loading older or incomplete saved records.
+Workout history remains stored locally in the browser. Use Backup/Restore periodically.
