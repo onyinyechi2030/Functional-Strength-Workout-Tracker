@@ -18,3 +18,11 @@ Open the Pages URL in Chrome or Edge and select the install icon in the address 
 ## Data warning
 
 GitHub hosts only the app files. Workout data remains local to the browser and device. Use the Backup tab regularly. Clearing browser storage or using another browser/device will not include prior records unless you import a backup.
+
+
+## Version 7 refinements
+- Start today's workout button and elapsed timer
+- Sticky live set-progress display
+- Jump to next unfinished exercise
+- Larger daily-entry controls
+- Finish-and-summary screen with sets, time, volume, and detected personal records

@@ -37,6 +37,19 @@ main{max-width:1180px;margin:auto;padding:24px 18px 50px}.view{display:none}.vie
 @media(max-width:850px){.dashboard-grid{grid-template-columns:1fr 1fr}.week-grid{grid-template-columns:repeat(4,1fr)}.pr-list{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.dashboard-grid,.pr-list{grid-template-columns:1fr}.week-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+/* Version 8: quieter daily-workout interface */
+button,select,input,textarea{font-size:1rem}
+button{min-height:42px;padding:10px 15px}
+.exercise{padding:22px;margin:18px 0}
+.setrow select,.setrow input{min-height:44px;padding:8px}
+.workout-status{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin:14px 0 18px}
+.workout-status .progressbar{flex:1;min-width:180px;margin:0}
+.workout-status strong{white-space:nowrap}
+.quick-actions{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0 18px}
+.summary-note{background:#f4f8f6;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:14px;display:none}
+.summary-note.show{display:block}
+@media(max-width:650px){.exercise{padding:18px}.quick-actions button{flex:1 1 100%}.workout-status{align-items:flex-start}.workout-status .progressbar{flex-basis:100%}}
 </style>
 </head>
 <body>
@@ -48,7 +61,7 @@ main{max-width:1180px;margin:auto;padding:24px 18px 50px}.view{display:none}.vie
 <div class="card"><h3>Recent personal bests</h3><div id="dashboardPRs" class="pr-list"></div></div>
 </section>
 <section id="workout" class="view active">
-<div class="card hero"><div><h2 id="dayTitle"></h2><p id="mission" class="muted"></p><div id="summary" class="summary"></div></div><div><label for="workoutDate">Workout date</label><input id="workoutDate" type="date"></div></div>
+<div class="card hero"><div><h2 id="dayTitle"></h2><p id="mission" class="muted"></p><div id="summary" class="summary"></div></div><div><label for="workoutDate">Workout date</label><input id="workoutDate" type="date"></div></div><div class="quick-actions"><button id="startToday" class="primary">Open today’s workout</button><button id="markAllSets" class="secondary">Mark all sets complete</button><button id="clearAllSets" class="secondary">Clear all set entries</button></div><div class="workout-status"><strong id="topCompletionText">0 of 0 sets · 0%</strong><div class="progressbar"><span id="topCompletionBar"></span></div></div>
 <div class="card"><div id="daybar" class="daybar"></div></div>
 <div class="card"><h3>Warm-up</h3><ul id="warmup" class="list"></ul><div class="quick-actions"><button id="markAllComplete" class="secondary">Mark all exercises complete</button><button id="markAllIncomplete" class="secondary">Clear all exercise checks</button></div></div>
 <div id="exerciseList"></div>
@@ -58,7 +71,7 @@ main{max-width:1180px;margin:auto;padding:24px 18px 50px}.view{display:none}.vie
 <div class="custom-form" data-slot="3"><div class="name"><label>Exercise 3</label><select class="customExercise"></select></div><div class="manual-name" hidden><label>Other exercise name</label><input class="customName" placeholder="Enter exercise name"></div><div><label>Sets</label><select class="customSets"></select></div><div><label>Target weight</label><select class="customWeight"></select></div><div><label>Target reps</label><select class="customReps"></select></div><div><label>Target time</label><select class="customTime"></select></div><button class="primary addCustom">Add exercise 3</button></div>
 </div></div>
 <div class="card"><h3>Cool-down</h3><ul id="cooldown" class="list"></ul></div>
-<div class="card"><h3>Session summary</h3><div class="session"><div><label>Total minutes</label><input id="totalMinutes" type="number" min="0"></div><div><label>Effort (RPE 1–10)</label><input id="rpe" type="number" min="1" max="10"></div><div><label>Energy before (1–10)</label><input id="energyBefore" type="number" min="1" max="10"></div><div><label>Energy after (1–10)</label><input id="energyAfter" type="number" min="1" max="10"></div><div class="wide"><label>Notes</label><textarea id="notes" placeholder="Technique, pain, energy, substitutions, progress..."></textarea></div></div><div class="progressbar"><span id="completionBar"></span></div><p id="completionText" class="muted"></p><div class="actions"><button id="saveWorkout" class="primary">Save workout</button><button id="loadWorkout" class="secondary">Load saved date</button><button id="clearWorkout" class="dangerbtn">Clear form</button></div></div>
+<div class="card"><h3>Session summary</h3><div class="session"><div><label>Total minutes</label><input id="totalMinutes" type="number" min="0"></div><div><label>Effort (RPE 1–10)</label><input id="rpe" type="number" min="1" max="10"></div><div><label>Energy before (1–10)</label><input id="energyBefore" type="number" min="1" max="10"></div><div><label>Energy after (1–10)</label><input id="energyAfter" type="number" min="1" max="10"></div><div class="wide"><label>Notes</label><textarea id="notes" placeholder="Technique, pain, energy, substitutions, progress..."></textarea></div></div><div class="progressbar"><span id="completionBar"></span></div><p id="completionText" class="muted"></p><div class="actions"><button id="saveWorkout" class="primary">Save workout</button><button id="finishWorkout" class="secondary">Save & show summary</button><button id="loadWorkout" class="secondary">Load saved date</button><button id="clearWorkout" class="dangerbtn">Clear form</button></div><div id="completionSummary" class="summary-note"></div></div>
 </section>
 <section id="history" class="view"><div class="card"><h2>Workout History</h2><div class="filters"><div><label>From</label><input id="fromDate" type="date"></div><div><label>To</label><input id="toDate" type="date"></div><div><label>Day</label><select id="dayFilter"><option value="">All days</option></select></div><div><label>Period</label><select id="periodFilter"><option value="all">All time</option><option value="week">This week</option><option value="month">This month</option><option value="12weeks">Last 12 weeks</option></select></div></div><div class="actions"><button id="applyFilters" class="primary">Apply filters</button><button id="resetFilters" class="secondary">Reset</button></div></div><div id="historyStats" class="stats"></div><div id="historyList"></div></section>
 <section id="progress" class="view"><div class="card"><h2>Consistency</h2><div class="filters"><div><label>Chart period</label><select id="chartPeriod"><option value="12">Last 12 weeks</option><option value="24">Last 24 weeks</option><option value="52">Last 52 weeks</option></select></div><div><label>Exercise progress</label><select id="exerciseFilter"></select></div></div></div><div class="card"><h3>Weekly workout completion</h3><div class="chart-wrap"><div id="consistencyChart" class="chart"></div></div></div><div class="card"><h3>Exercise progression</h3><div id="exerciseProgress"></div></div></section>
@@ -182,7 +195,7 @@ function renderDashboard(){
 function renderWorkout(reset=true){const d=PROGRAM[activeDay];dayTitle.textContent=`${d.day} — ${d.focus}`;mission.textContent=d.mission;summary.innerHTML=`<span class="pill">${d.time}</span><span class="pill">${d.ex.length} programmed exercises</span><span class="pill">Set-level tracking</span>`;warmup.innerHTML=d.warm.map(x=>`<li>${esc(x)}</li>`).join('');cooldown.innerHTML=d.cool.map(x=>`<li>${esc(x)}</li>`).join('');renderDaybar();refreshCustomSelectors();if(reset){currentExercises=baseExercises();clearSessionFields()}renderExercises();updateCompletion();loadSaved(false)}
 function renderExercises(){exerciseList.innerHTML=currentExercises.map((e,i)=>exerciseHTML(e,i)).join('');$$('.exercise').forEach((card,i)=>{const e=currentExercises[i];card.querySelector('.donecheck').onchange=ev=>{e.complete=ev.target.checked;card.classList.toggle('done',e.complete);updateCompletion()};card.querySelectorAll('.setrow').forEach((row,si)=>{['weight','reps','time','notes'].forEach(k=>{const el=row.querySelector('.'+k);const handler=ev=>{e.setData[si][k]=ev.target.value;updateCompletion()};el.oninput=handler;el.onchange=handler})});card.querySelector('.addset').onclick=()=>{e.setData.push({weight:'',reps:'',time:'',notes:''});renderExercises()};card.querySelector('.removeset').onclick=()=>{if(e.setData.length>1)e.setData.pop();renderExercises()};const del=card.querySelector('.deleteExercise');if(del)del.onclick=()=>{currentExercises.splice(i,1);renderExercises();updateCompletion()};});}
 function exerciseHTML(e,i){const setRows=e.setData.map((s,si)=>`<div class="setrow"><b>${si+1}</b><select class="weight">${weightOptions(s.weight)}</select><select class="reps">${repOptions(s.reps)}</select><select class="time">${timeOptions(s.time)}</select><input class="notes" value="${esc(s.notes)}" placeholder="notes / band"></div>`).join('');return `<article class="exercise ${e.complete?'done':''}"><div class="exercise-head"><div class="num">${i+1}</div><div><h3>${esc(e.name)}</h3><div class="rx">${e.setData.length} sets${e.reps?' · '+esc(e.reps):''}${e.time?' · '+esc(e.time):''}${e.rest?' · rest '+esc(e.rest):''}</div></div><div><label class="check"><input class="donecheck" type="checkbox" ${e.complete?'checked':''}> Mark all sets complete</label><div class="exercise-progress">${exerciseProgress(e).done}/${exerciseProgress(e).total} sets · ${exerciseProgress(e).percent}%</div></div></div><div class="exercise-grid"><div class="cuebox"><h4>Technique cue</h4><p>${esc(e.cue||'Use controlled repetitions and good form.')}</p></div><div class="cuebox"><h4>Alternative / note</h4><p>${esc(e.alt|| (e.custom?'Custom exercise':'Use the prescribed variation unless a substitution is needed.'))}</p></div></div><div class="sets"><div class="setlabels"><span>Set</span><span>Weight</span><span>Reps</span><span>Time</span><span>Notes</span></div>${setRows}<div class="setactions"><button class="small addset">+ Set</button><button class="small removeset">− Set</button>${e.custom?'<button class="small danger deleteExercise">Delete exercise</button>':''}</div></div></article>`}
-function updateCompletion(){const p=workoutProgress({exercises:currentExercises});completionBar.style.width=p.percent+'%';completionText.textContent=`${p.done} of ${p.total} sets completed (${p.percent}%). Exercise checkboxes mark all sets complete.`;document.querySelectorAll('.exercise').forEach((card,i)=>{const ep=exerciseProgress(currentExercises[i]);const label=card.querySelector('.exercise-progress');if(label)label.textContent=`${ep.done}/${ep.total} sets · ${ep.percent}%`;card.classList.toggle('done',ep.percent===100)})}
+function updateCompletion(){const p=workoutProgress({exercises:currentExercises});completionBar.style.width=p.percent+'%';completionText.textContent=`${p.done} of ${p.total} sets completed (${p.percent}%). Exercise checkboxes mark all sets complete.`;if(window.topCompletionBar)topCompletionBar.style.width=p.percent+'%';if(window.topCompletionText)topCompletionText.textContent=`${p.done} of ${p.total} sets · ${p.percent}%`;document.querySelectorAll('.exercise').forEach((card,i)=>{const ep=exerciseProgress(currentExercises[i]);const label=card.querySelector('.exercise-progress');if(label)label.textContent=`${ep.done}/${ep.total} sets · ${ep.percent}%`;card.classList.toggle('done',ep.percent===100)})}
 function clearSessionFields(){totalMinutes.value='';rpe.value='';energyBefore.value='';energyAfter.value='';notes.value=''}
 function recordId(day,date){return `${date}-${day}`}
 function collect(){const d=PROGRAM[activeDay],date=workoutDate.value;return{id:recordId(d.day,date),date,day:d.day,focus:d.focus,plannedCount:d.ex.length,totalMinutes:totalMinutes.value,rpe:rpe.value,energyBefore:energyBefore.value,energyAfter:energyAfter.value,notes:notes.value,updatedAt:new Date().toISOString(),exercises:currentExercises.map(e=>({...e,setData:e.setData.map(s=>({...s}))}))}}
@@ -211,5 +224,25 @@ window.addEventListener('appinstalled',()=>{installApp.hidden=true});
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.warn));
 
 init();
+
+function clearAllSetEntries(){
+  if(!confirm('Clear all set entries and exercise checks for this workout?')) return;
+  currentExercises.forEach(e=>{e.complete=false;e.setData.forEach(x=>{x.weight='';x.reps='';x.time='';x.notes=''})});
+  renderExercises();
+}
+function showSimpleSummary(){
+  const rec=save(true); if(!rec) return;
+  const p=workoutProgress(rec);
+  const volume=Math.round(rec.exercises.reduce((n,e)=>n+exerciseBest(e).volume,0));
+  completionSummary.innerHTML=`<b>Workout saved.</b> ${p.done} of ${p.total} sets completed (${p.percent}%). ${rec.totalMinutes?`${rec.totalMinutes} minutes recorded. `:''}${volume?`${volume.toLocaleString()} total logged volume.`:''}`;
+  completionSummary.classList.add('show');
+  completionSummary.scrollIntoView({behavior:'smooth',block:'nearest'});
+  renderDashboard();
+}
+
+document.getElementById('startToday').onclick=()=>{const d=new Date();workoutDate.value=isoToday();activeDay=(d.getDay()+6)%7;renderWorkout(true);loadSaved(false);window.scrollTo({top:0,behavior:'smooth'});};
+document.getElementById('markAllSets').onclick=()=>markEveryExercise(true);
+document.getElementById('clearAllSets').onclick=clearAllSetEntries;
+document.getElementById('finishWorkout').onclick=showSimpleSummary;
 </script>
 </body></html>
