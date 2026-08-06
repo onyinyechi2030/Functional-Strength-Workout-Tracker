@@ -1,28 +1,13 @@
-# Strength Workout Tracker
+# Strength Workout Tracker — Version 9
 
-A private-by-design workout tracker. The app is hosted as a static GitHub Pages site, but workout records remain in the browser's local storage.
+GitHub Pages-ready, local-first strength workout tracker.
 
-## Publish with GitHub Pages
+## Version 9 substitution support
+- Substitute any programmed exercise with another library movement or a manually entered exercise.
+- The original programmed movement remains displayed for context.
+- The replacement inherits the scheduled set slots, and every completed replacement set counts toward the day’s completion percentage.
+- Add or remove replacement sets as needed.
+- Restore the original exercise at any time.
+- Substitutions are saved in workout history and JSON backups.
 
-1. Create a new GitHub repository.
-2. Upload every file and folder from this package, preserving `.github/workflows/deploy-pages.yml`.
-3. In the repository, open **Settings → Pages**.
-4. Under **Build and deployment**, choose **GitHub Actions** as the source.
-5. Open the **Actions** tab and allow the deployment workflow to finish.
-6. Open the Pages URL displayed by GitHub.
-
-## Install on Windows
-
-Open the Pages URL in Chrome or Edge and select the install icon in the address bar. You can also use the app's **Install app** button when it appears.
-
-## Data warning
-
-GitHub hosts only the app files. Workout data remains local to the browser and device. Use the Backup tab regularly. Clearing browser storage or using another browser/device will not include prior records unless you import a backup.
-
-
-## Version 7 refinements
-- Start today's workout button and elapsed timer
-- Sticky live set-progress display
-- Jump to next unfinished exercise
-- Larger daily-entry controls
-- Finish-and-summary screen with sets, time, volume, and detected personal records
+Deploy using GitHub Pages: `main` branch and `/ (root)`. Workout records remain in browser local storage.
