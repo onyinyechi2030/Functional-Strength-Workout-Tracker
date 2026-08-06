@@ -1,8 +1,8 @@
-# Strength Workout Tracker — Version 9
+# Strength Workout Tracker — Version 9.1
 
 GitHub Pages-ready, local-first strength workout tracker.
 
-## Version 9 substitution support
+## Version 9.1 substitution support
 - Substitute any programmed exercise with another library movement or a manually entered exercise.
 - The original programmed movement remains displayed for context.
 - The replacement inherits the scheduled set slots, and every completed replacement set counts toward the day’s completion percentage.
@@ -11,3 +11,6 @@ GitHub Pages-ready, local-first strength workout tracker.
 - Substitutions are saved in workout history and JSON backups.
 
 Deploy using GitHub Pages: `main` branch and `/ (root)`. Workout records remain in browser local storage.
+
+
+Version 9.1 fixes the substitution renderer and preserves all programmed exercises when loading older or incomplete saved records.

@@ -192,6 +192,54 @@ function renderDashboard(){
  const prs=personalBests();dashboardPRs.innerHTML=prs.length?prs.map(p=>`<div class="pr-card"><b>${esc(p.name)}</b><span>${p.w?p.w+' lb':p.t?p.t+' sec':p.rep?p.rep+' reps':'Recorded'} · ${p.date}</span></div>`).join(''):'<div class="empty">Personal bests will appear after performance data are saved.</div>'
 }
 
+
+function substitutionOptions(selected=''){
+  const originalNames=new Set(PROGRAM[activeDay].ex.map(e=>e.name));
+  const choices=EXERCISE_LIBRARY.filter(n=>!originalNames.has(n)).sort();
+  let html='<option value="">Select a replacement</option>';
+  html+=choices.map(n=>`<option value="${esc(n)}" ${n===selected?'selected':''}>${esc(n)}</option>`).join('');
+  html+='<option value="__other__">Other — enter manually</option>';
+  return html;
+}
+function applySubstitution(e,card){
+  const sel=card.querySelector('.sub-select');
+  const manual=card.querySelector('.sub-manual-input');
+  const selected=sel.value;
+  const replacement=selected==='__other__' ? manual.value.trim() : selected;
+  if(!replacement){alert(selected==='__other__'?'Enter the replacement exercise name.':'Select a replacement exercise.');return;}
+  if(!e.originalName)e.originalName=e.substitutedFor||e.name;
+  if(!e.originalPrescription)e.originalPrescription={sets:e.setData?.length||e.sets||1,reps:e.reps||'',time:e.time||'',rest:e.rest||'',cue:e.cue||'',alt:e.alt||''};
+  e.substitutedFor=e.originalName;
+  e.name=replacement;
+  e.cue='Perform the replacement with controlled technique and record any variation details in Notes.';
+  e.alt=`Replacement for ${e.originalName}. Completed replacement sets count toward today’s programmed work.`;
+  renderExercises();updateCompletion();
+}
+function restoreOriginal(e){
+  if(!e.originalName)return;
+  const p=e.originalPrescription||{};
+  e.name=e.originalName;
+  e.reps=p.reps||'';e.time=p.time||'';e.rest=p.rest||'';e.cue=p.cue||'';e.alt=p.alt||'';
+  e.substitutedFor='';
+  renderExercises();updateCompletion();
+}
+function displayExerciseName(e){return e.substitutedFor?`${e.name} (substituted for ${e.substitutedFor})`:e.name}
+function normalizeSavedExercises(saved){
+  const bases=baseExercises();
+  if(!Array.isArray(saved)||saved.length===0)return bases;
+  const used=new Set();
+  const merged=bases.map((base,i)=>{
+    const found=saved.find((x,j)=>!used.has(j)&&!x.custom&&(x.id===base.id||x.originalName===base.name||(!x.substitutedFor&&x.name===base.name)));
+    if(!found)return base;
+    const j=saved.indexOf(found);used.add(j);
+    const mergedItem={...base,...found,id:base.id,custom:false,originalName:base.name,originalPrescription:base.originalPrescription};
+    if(!Array.isArray(mergedItem.setData)||mergedItem.setData.length===0)mergedItem.setData=base.setData;
+    return mergedItem;
+  });
+  saved.forEach((x,j)=>{if(x.custom&&!used.has(j))merged.push(x)});
+  return merged;
+}
+
 function renderWorkout(reset=true){const d=PROGRAM[activeDay];dayTitle.textContent=`${d.day} — ${d.focus}`;mission.textContent=d.mission;summary.innerHTML=`<span class="pill">${d.time}</span><span class="pill">${d.ex.length} programmed exercises</span><span class="pill">Set-level tracking</span>`;warmup.innerHTML=d.warm.map(x=>`<li>${esc(x)}</li>`).join('');cooldown.innerHTML=d.cool.map(x=>`<li>${esc(x)}</li>`).join('');renderDaybar();refreshCustomSelectors();if(reset){currentExercises=baseExercises();clearSessionFields()}renderExercises();updateCompletion();loadSaved(false)}
 function renderExercises(){exerciseList.innerHTML=currentExercises.map((e,i)=>exerciseHTML(e,i)).join('');$$('.exercise').forEach((card,i)=>{const e=currentExercises[i];card.querySelector('.donecheck').onchange=ev=>{e.complete=ev.target.checked;card.classList.toggle('done',e.complete);updateCompletion()};card.querySelectorAll('.setrow').forEach((row,si)=>{['weight','reps','time','notes'].forEach(k=>{const el=row.querySelector('.'+k);const handler=ev=>{e.setData[si][k]=ev.target.value;updateCompletion()};el.oninput=handler;el.onchange=handler})});card.querySelector('.addset').onclick=()=>{e.setData.push({weight:'',reps:'',time:'',notes:''});renderExercises();updateCompletion()};card.querySelector('.removeset').onclick=()=>{if(e.setData.length>1)e.setData.pop();renderExercises();updateCompletion()};const del=card.querySelector('.deleteExercise');if(del)del.onclick=()=>{currentExercises.splice(i,1);renderExercises();updateCompletion()};const subBtn=card.querySelector('.substituteExercise');if(subBtn){const panel=card.querySelector('.sub-panel'),sel=card.querySelector('.sub-select'),manualWrap=card.querySelector('.sub-manual'),manual=card.querySelector('.sub-manual-input');subBtn.onclick=()=>{panel.classList.toggle('show');if(panel.classList.contains('show'))sel.focus()};sel.onchange=()=>{manualWrap.hidden=sel.value!=='__other__';if(sel.value==='__other__')manual.focus()};card.querySelector('.applySub').onclick=()=>applySubstitution(e,card);card.querySelector('.cancelSub').onclick=()=>panel.classList.remove('show');const restore=card.querySelector('.restoreExercise');if(restore)restore.onclick=()=>restoreOriginal(e)}})}
 function exerciseHTML(e,i){const setRows=e.setData.map((s,si)=>`<div class="setrow"><b>${si+1}</b><select class="weight">${weightOptions(s.weight)}</select><select class="reps">${repOptions(s.reps)}</select><select class="time">${timeOptions(s.time)}</select><input class="notes" value="${esc(s.notes)}" placeholder="notes / band"></div>`).join('');return `<article class="exercise ${e.complete?'done':''}"><div class="exercise-head"><div class="num">${i+1}</div><div><h3>${esc(e.name)}</h3>${e.substitutedFor?`<div class="sub-badge">Substituted for ${esc(e.substitutedFor)}</div>`:''}<div class="rx">${e.setData.length} sets${e.reps?' · '+esc(e.reps):''}${e.time?' · '+esc(e.time):''}${e.rest?' · rest '+esc(e.rest):''}</div></div><div><label class="check"><input class="donecheck" type="checkbox" ${e.complete?'checked':''}> Mark all sets complete</label><div class="exercise-progress">${exerciseProgress(e).done}/${exerciseProgress(e).total} sets · ${exerciseProgress(e).percent}%</div></div></div><div class="exercise-grid"><div class="cuebox"><h4>Technique cue</h4><p>${esc(e.cue||'Use controlled repetitions and good form.')}</p></div><div class="cuebox"><h4>Alternative / note</h4><p>${esc(e.alt|| (e.custom?'Custom exercise':'Use the prescribed variation unless a substitution is needed.'))}</p></div></div>${!e.custom?`<div class="actions"><button class="small substituteExercise">${e.substitutedFor?'Change substitution':'Substitute exercise'}</button>${e.substitutedFor?'<button class="small restoreExercise">Restore original exercise</button>':''}</div><div class="sub-panel"><div class="sub-grid"><div><label>Replacement exercise</label><select class="sub-select">${substitutionOptions(e.substitutedFor?e.name:'')}</select></div><div class="sub-manual" hidden><label>Other exercise</label><input class="sub-manual-input" placeholder="Enter replacement name"></div><button class="small applySub">Apply substitution</button><button class="small cancelSub">Cancel</button></div><p class="muted">The replacement uses the same scheduled set slots, so completed sets receive full credit toward today’s workout. You may add or remove sets afterward.</p></div>`:''}<div class="sets"><div class="setlabels"><span>Set</span><span>Weight</span><span>Reps</span><span>Time</span><span>Notes</span></div>${setRows}<div class="setactions"><button class="small addset">+ Set</button><button class="small removeset">− Set</button>${e.custom?'<button class="small danger deleteExercise">Delete exercise</button>':''}</div></div></article>`}
@@ -200,7 +248,7 @@ function clearSessionFields(){totalMinutes.value='';rpe.value='';energyBefore.va
 function recordId(day,date){return `${date}-${day}`}
 function collect(){const d=PROGRAM[activeDay],date=workoutDate.value;return{id:recordId(d.day,date),date,day:d.day,focus:d.focus,plannedCount:d.ex.length,totalMinutes:totalMinutes.value,rpe:rpe.value,energyBefore:energyBefore.value,energyAfter:energyAfter.value,notes:notes.value,updatedAt:new Date().toISOString(),exercises:currentExercises.map(e=>({...e,setData:e.setData.map(s=>({...s}))}))}}
 function save(){if(!workoutDate.value)return alert('Choose a date.');const rec=collect(),all=records(),idx=all.findIndex(x=>x.id===rec.id);if(idx>=0)all[idx]=rec;else all.push(rec);setRecords(all);renderDashboard();alert('Workout saved locally.');}
-function loadSaved(show=true){const d=PROGRAM[activeDay],rec=records().find(x=>x.id===recordId(d.day,workoutDate.value));if(!rec){if(show)alert('No saved workout for this day and date.');return}currentExercises=rec.exercises||baseExercises();totalMinutes.value=rec.totalMinutes||'';rpe.value=rec.rpe||'';energyBefore.value=rec.energyBefore||'';energyAfter.value=rec.energyAfter||'';notes.value=rec.notes||'';renderExercises();updateCompletion();if(show)alert('Saved workout loaded.');}
+function loadSaved(show=true){const d=PROGRAM[activeDay],rec=records().find(x=>x.id===recordId(d.day,workoutDate.value));if(!rec){if(show)alert('No saved workout for this day and date.');return}currentExercises=normalizeSavedExercises(rec.exercises);totalMinutes.value=rec.totalMinutes||'';rpe.value=rec.rpe||'';energyBefore.value=rec.energyBefore||'';energyAfter.value=rec.energyAfter||'';notes.value=rec.notes||'';renderExercises();updateCompletion();if(show)alert('Saved workout loaded.');}
 function clearForm(){if(!confirm('Clear the current unsaved form?'))return;currentExercises=baseExercises();clearSessionFields();renderExercises();updateCompletion()}
 function addCustomExercise(form){const selected=form.querySelector('.customExercise').value;const manual=form.querySelector('.customName').value.trim();const name=selected==='__other__'?manual:selected;if(!name)return alert(selected==='__other__'?'Enter an exercise name.':'Select an exercise.');const setsEl=form.querySelector('.customSets'),weightEl=form.querySelector('.customWeight'),repsEl=form.querySelector('.customReps'),timeEl=form.querySelector('.customTime');const n=Math.max(1,+setsEl.value||1),weight=weightEl.value||'';currentExercises.push({id:'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),custom:true,name,sets:n,reps:repsEl.value?repsEl.value:'',time:timeEl.value?timeEl.value+' sec':'',rest:'',cue:'Additional exercise — record the variation and form notes as needed.',complete:false,setData:Array.from({length:n},()=>({weight,reps:repsEl.value||'',time:timeEl.value||'',notes:''}))});form.querySelector('.customExercise').value='';form.querySelector('.customName').value='';form.querySelector('.manual-name').hidden=true;setsEl.value='2';weightEl.value='';repsEl.value='';timeEl.value='';renderExercises();updateCompletion();}
 function weekStart(date){const d=new Date(date+'T12:00:00'),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10)}
