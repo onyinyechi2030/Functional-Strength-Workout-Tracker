@@ -1,14 +1,10 @@
-# Strength Workout Tracker — Version 10
+# Strength Workout Tracker v10.1
 
-A local-first workout tracker for a five-day strength program with Thursday and Sunday recovery tracking.
+GitHub Pages deployment:
 
-## Weekly schedule
-- Monday: 60-minute full-body foundation strength
-- Tuesday: 45-minute upper pull, posture, arms and core
-- Wednesday: 60-minute lower body and posterior chain
-- Thursday: recovery — yoga, yin yoga, walking and mobility
-- Friday: 45-minute upper push, posture, arms and calves
-- Saturday: 60-minute full-body functional performance
-- Sunday: recovery — yoga, yin yoga, walking and mobility
+1. Upload `index.html`, `.nojekyll`, and `README.md` directly to the repository root.
+2. In **Settings → Pages**, choose **Deploy from a branch**.
+3. Select `main` and `/ (root)`.
+4. Save, then wait for the deployment to complete.
 
-Workout history remains stored locally in the browser. Use Backup/Restore periodically.
+Workout records remain in the browser's local storage. Use the app's Backup tab regularly.
