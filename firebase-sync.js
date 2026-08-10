@@ -1,0 +1,71 @@
+const CONFIG_KEY='strengthCompanionFirebaseConfigV1';
+const $=id=>document.getElementById(id);
+let sdk=null, app=null, auth=null, db=null, user=null, unsubscribe=null, applyingCloud=false, cloudReady=false;
+const api=()=>window.StrengthCompanion;
+async function waitForApi(timeoutMs=8000){
+  const start=Date.now();
+  while(Date.now()-start<timeoutMs){
+    const a=api();
+    if(a&&typeof a.getRecords==='function'&&typeof a.setRecords==='function') return a;
+    await new Promise(r=>setTimeout(r,50));
+  }
+  throw new Error('The main app is still loading. Refresh the page and try again.');
+}
+function status(kind,title,detail=''){const box=$('cloudStatus');if(!box)return;box.className=`cloud-status ${kind}`;box.innerHTML=`<b>${escapeHtml(title)}</b><span>${escapeHtml(detail)}</span>`;}
+function message(id,text){const e=$(id);if(e)e.textContent=text||'';}
+function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function localRecords(){const a=api();return a&&typeof a.getRecords==='function'?a.getRecords():[];}
+function updatedMs(r){const n=Date.parse(r?.updatedAt||'');return Number.isFinite(n)?n:0;}
+function mergeRecords(a,b){const map=new Map();[...(a||[]),...(b||[])].forEach(r=>{if(!r?.id)return;const prev=map.get(r.id);if(!prev||updatedMs(r)>=updatedMs(prev))map.set(r.id,r)});return [...map.values()].sort((x,y)=>(x.date||'').localeCompare(y.date||''));}
+function updateMigration(){const n=localRecords().length;message('migrationStatus',n?`${n} existing workout/recovery record${n===1?'':'s'} found. This build uses the same local-storage key, so they are already retained.`:'No existing records are currently stored in this browser.');}
+function parseConfig(raw){let t=(raw||'').trim();if(!t)throw new Error('Paste the Firebase configuration block first.');t=t.replace(/^\s*(?:const|let|var)\s+firebaseConfig\s*=\s*/,'').replace(/;\s*$/,'').trim();let obj;try{obj=JSON.parse(t)}catch{try{obj=Function(`"use strict";return (${t})`)()}catch{throw new Error('Could not parse the Firebase configuration block. Paste it exactly as Firebase provides it.')}}const required=['apiKey','authDomain','projectId','appId'];const missing=required.filter(k=>!obj?.[k]);if(missing.length)throw new Error(`Missing required value${missing.length>1?'s':''}: ${missing.join(', ')}`);return obj;}
+function configBlock(c){return c?`const firebaseConfig = ${JSON.stringify(c,null,2)};`:'';}
+function savedConfig(){try{return JSON.parse(localStorage.getItem(CONFIG_KEY)||'null')}catch{return null}}
+async function loadSdk(){if(sdk)return sdk;status('syncing','Loading Firebase','Connecting to the Firebase SDK…');try{const [appMod,authMod,fsMod]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js')]);sdk={...appMod,...authMod,...fsMod};return sdk}catch(e){status('error','Firebase failed to load',e.message);throw new Error('Firebase scripts could not load. Check the internet connection, browser extensions, or content-blocking settings.');}}
+async function initializeFirebase(){const c=savedConfig();if(!c){status('local','Local only','Paste and save a Firebase configuration to enable cloud sync.');return}const f=await loadSdk();try{app=f.getApps().length?f.getApp():f.initializeApp(c);auth=f.initializeAuth(app,{persistence:f.browserLocalPersistence});db=f.getFirestore(app);f.onAuthStateChanged(auth,async u=>{user=u||null;if(user){message('authMessage',`Signed in as ${user.email||user.displayName||user.uid}`);status('syncing','Signed in','Loading cloud history…');await startCloud();}else{if(unsubscribe){unsubscribe();unsubscribe=null}cloudReady=false;status('ready','Cloud configured','Sign in to synchronize history.');message('authMessage','Not signed in.')}});status('ready','Firebase configured','Sign in to begin synchronization.');}catch(e){status('error','Firebase initialization error',e.message);throw e;}}
+function workoutsCollection(){return sdk.collection(db,'users',user.uid,'workouts');}
+async function writeRecord(r){await sdk.setDoc(sdk.doc(db,'users',user.uid,'workouts',r.id),r,{merge:false});}
+async function cloudRecords(){const snap=await sdk.getDocs(workoutsCollection());return snap.docs.map(d=>d.data());}
+async function uploadAll(records=localRecords()){if(!user)throw new Error('Sign in first.');await Promise.all(records.map(writeRecord));return records.length;}
+async function reconcileFromLocal(){if(!user||!cloudReady||applyingCloud)return;try{status('syncing','Synchronizing','Saving local changes to the cloud…');const locals=localRecords();const remote=await cloudRecords();const remoteIds=new Set(remote.map(r=>r.id));await uploadAll(locals);const localIds=new Set(locals.map(r=>r.id));await Promise.all([...remoteIds].filter(id=>!localIds.has(id)).map(id=>sdk.deleteDoc(sdk.doc(db,'users',user.uid,'workouts',id))));status('ready','Automatic sync active',`${locals.length} records are current.`);}catch(e){status('error','Sync error',e.message);message('syncMessage',e.message);}}
+async function startCloud(){
+  if(unsubscribe){unsubscribe();unsubscribe=null}
+  const ref=workoutsCollection();
+  // Push any existing local history once when cloud sync starts. Do not re-upload
+  // from inside the snapshot listener, which can create an echo/rerender loop.
+  try{await uploadAll(localRecords())}catch(e){status('error','Initial cloud upload error',e.message)}
+  unsubscribe=sdk.onSnapshot(ref,async snap=>{
+    try{
+      const remote=snap.docs.map(d=>d.data());
+      const local=localRecords();
+      const merged=mergeRecords(local,remote);
+      // A local save is echoed back by Firestore. If the merged result is identical
+      // to what is already in local storage, do nothing. In particular, do not call
+      // app.refresh(), because that rebuilds the workout form and steals keyboard focus.
+      const localJson=JSON.stringify(local);
+      const mergedJson=JSON.stringify(merged);
+      if(localJson!==mergedJson){
+        applyingCloud=true;
+        const main=await waitForApi();
+        main.setRecords(merged);
+        applyingCloud=false;
+        // Refresh passive views only when genuinely new/changed remote data arrived.
+        // Preserve the actively edited workout DOM and keyboard focus.
+        main.refreshPassive?.();
+      }
+      cloudReady=true;
+      status('ready','Automatic sync active',`${merged.length} records available on this device.`);
+      message('syncMessage','Changes save locally and synchronize automatically while you are signed in.');
+    }catch(e){
+      applyingCloud=false;
+      status('error','Sync error',e.message);
+    }
+  },e=>status('error','Cloud listener error',e.message));
+}
+async function saveConfig(){try{const c=parseConfig($('firebaseConfigBlock').value);localStorage.setItem(CONFIG_KEY,JSON.stringify(c));$('firebaseConfigBlock').value=configBlock(c);message('configMessage','Configuration saved in this browser. Initializing Firebase…');await initializeFirebase();}catch(e){status('error','Configuration error',e.message);message('configMessage',e.message);}}
+async function googleSignIn(){try{if(!auth)await initializeFirebase();if(!auth)throw new Error('Save a Firebase configuration first.');const p=new sdk.GoogleAuthProvider();await sdk.signInWithPopup(auth,p,sdk.browserPopupRedirectResolver);}catch(e){message('authMessage',e.message);status('error','Sign-in error',e.message);}}
+async function emailSignIn(create=false){try{if(!auth)await initializeFirebase();if(!auth)throw new Error('Save a Firebase configuration first.');const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;if(!email||!password)throw new Error('Enter an email address and password.');if(create)await sdk.createUserWithEmailAndPassword(auth,email,password);else await sdk.signInWithEmailAndPassword(auth,email,password);}catch(e){message('authMessage',e.message);}}
+async function resetPassword(){try{if(!auth)await initializeFirebase();const email=$('cloudEmail').value.trim();if(!email)throw new Error('Enter your email address first.');await sdk.sendPasswordResetEmail(auth,email);message('authMessage','Password-reset email sent.');}catch(e){message('authMessage',e.message);}}
+async function syncNow(mode='merge'){try{if(!user)throw new Error('Sign in first.');status('syncing','Synchronizing','Working…');if(mode==='upload'){const n=await uploadAll();message('syncMessage',`Uploaded ${n} local records.`);}else{const remote=await cloudRecords();const merged=mergeRecords(localRecords(),remote);const main=await waitForApi();applyingCloud=true;main.setRecords(merged);applyingCloud=false;await uploadAll(merged);main.refresh?.();message('syncMessage',`Merged ${merged.length} records.`);}cloudReady=true;status('ready','Automatic sync active','Local and cloud history are current.');}catch(e){status('error','Sync error',e.message);message('syncMessage',e.message);}}
+async function bind(){await waitForApi();const ids=['saveFirebaseConfig','clearFirebaseConfig','googleSignIn','emailSignIn','createAccount','resetPassword','signOutCloud','syncNow','uploadLocal','downloadCloud','cloudExportBackup'];if(ids.some(id=>!$(id))){console.error('Cloud UI is incomplete.');return}$('saveFirebaseConfig').addEventListener('click',saveConfig);$('clearFirebaseConfig').addEventListener('click',()=>{localStorage.removeItem(CONFIG_KEY);$('firebaseConfigBlock').value='';if(unsubscribe)unsubscribe();unsubscribe=null;user=null;auth=null;db=null;app=null;sdk=null;cloudReady=false;message('configMessage','Firebase configuration removed. Local workout history was not changed.');status('local','Local only','Cloud configuration removed.');});$('googleSignIn').addEventListener('click',googleSignIn);$('emailSignIn').addEventListener('click',()=>emailSignIn(false));$('createAccount').addEventListener('click',()=>emailSignIn(true));$('resetPassword').addEventListener('click',resetPassword);$('signOutCloud').addEventListener('click',async()=>{try{if(auth)await sdk.signOut(auth)}catch(e){message('authMessage',e.message)}});$('syncNow').addEventListener('click',()=>syncNow('merge'));$('uploadLocal').addEventListener('click',()=>syncNow('upload'));$('downloadCloud').addEventListener('click',()=>syncNow('merge'));$('cloudExportBackup').addEventListener('click',()=>api()?.exportBackup?.());window.addEventListener('strength-records-changed',()=>{updateMigration();reconcileFromLocal()});const c=savedConfig();$('firebaseConfigBlock').value=configBlock(c);updateMigration();status(c?'ready':'local',c?'Firebase configuration found':'Local only',c?'Sign in to synchronize history.':'Cloud sync is optional.');if(c)initializeFirebase().catch(e=>message('configMessage',e.message));}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>bind().catch(e=>status('error','Cloud initialization error',e.message)));else bind().catch(e=>status('error','Cloud initialization error',e.message));
