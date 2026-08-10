@@ -4,3 +4,4 @@ Dashboard cleanup: separate strength/recovery weekly totals, recovery minutes de
 
 
 v3.3 decouples dashboard rendering from workout UI initialization and reads saved weekly minutes directly from stored records.
+Republish v3.3
