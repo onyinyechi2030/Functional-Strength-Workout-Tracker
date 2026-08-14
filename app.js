@@ -1,70 +1,58 @@
 
 const PROGRAM=[
-{day:'Monday',kind:'strength',focus:'Full-Body Foundation Strength',time:'60 min',mission:'Build foundational whole-body strength through squat, hinge, push, posture, core, unilateral leg work, and loaded carries.',warm:['March in place — 1 minute','Bodyweight squats — 10','Hip hinges — 10','Cat-Cow — 8','Bird Dog — 6 each side','Arm circles — 15 forward / 15 backward','Band pull-aparts or scapular retractions — 15'],cool:['Doorway chest stretch — 30 sec each side','Kneeling hip-flexor stretch — 30 sec each side','Child’s Pose — 30–45 sec','Diaphragmatic breathing — 5 slow breaths'],ex:[
+{day:'Monday',kind:'strength',focus:'Lower Body + Push + Core',time:'60–75 min',mission:'Start the week with high-quality squat, hinge and pressing work while reinforcing trunk stability and posture.',warm:['March in place — 1 minute','Bodyweight squats — 10','Hip hinges — 10','Arm circles — 15 each direction','Bird Dog — 6 each side','Band pull-aparts — 15'],cool:['Kneeling hip-flexor stretch — 30 sec each side','Doorway chest stretch — 30 sec each side','Child’s Pose — 30–45 sec','Slow breathing — 5 breaths'],ex:[
 {name:'Goblet Squat',sets:4,reps:'6–8',rest:'90–120 sec',cue:'Brace, sit between the hips, knees track over toes, drive through the whole foot.',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Standing Dumbbell Overhead Press',sets:3,reps:'8',rest:'75 sec',cue:'Brace, ribs down, press overhead without leaning back.',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Dumbbell Romanian Deadlift',sets:3,reps:'8',rest:'90 sec',cue:'Push hips back, keep dumbbells close, neutral spine, squeeze glutes to stand.',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Reverse Dumbbell Lunge',sets:3,reps:'8 each leg',rest:'75 sec',cue:'Step back under control, stay tall, drive through the front foot.',alt:'Step-Up if lunges are uncomfortable',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Farmer Carry',sets:3,time:'45–60 sec',rest:'60 sec',cue:'Stand tall, shoulders level, controlled steps, breathe normally.',equipment:'Standing Dumbbells / Carry',priority:'Primary'},
-{name:'Band Face Pull',sets:2,reps:'12–15',rest:'45 sec',cue:'Pull toward forehead, elbows high, avoid shrugging.',alt:'Dumbbell rear-delt fly',equipment:'Resistance Band',priority:'Accessory'},
-{name:'Pallof Press',sets:2,reps:'10 each side',rest:'30–45 sec',cue:'Keep hips square and resist rotation.',alt:'Suitcase carry',equipment:'Resistance Band',priority:'Accessory'},
-{name:'Dumbbell Floor Press',sets:3,reps:'8–10',rest:'90 sec',cue:'Wrists over elbows, lightly touch upper arms to floor, press smoothly.',equipment:'Mat / Floor',priority:'Primary'},
-{name:'Bird Dog',sets:2,reps:'8 each side',rest:'30 sec',cue:'Reach long, keep hips level, avoid arching.',equipment:'Mat / Floor',priority:'Accessory'}
+{name:'Dumbbell Romanian Deadlift',sets:3,reps:'8–10',rest:'90 sec',cue:'Push hips back, keep weights close, neutral spine, squeeze glutes to stand.',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Standing Dumbbell Overhead Press',sets:3,reps:'8–10',rest:'75–90 sec',cue:'Brace, ribs down, press without leaning back.',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Reverse Dumbbell Lunge',sets:3,reps:'8 each leg',rest:'75 sec',cue:'Step back under control and drive through the front foot.',alt:'Step-Up',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Farmer Carry',sets:3,time:'45–60 sec',rest:'60 sec',cue:'Stand tall, shoulders level, controlled steps.',equipment:'Standing Dumbbells / Carry',priority:'Primary'},
+{name:'Band Face Pull',sets:2,reps:'12–15',rest:'45 sec',cue:'Pull toward forehead, elbows high, avoid shrugging.',alt:'Rear-delt fly',equipment:'Resistance Band',priority:'Accessory'},
+{name:'Dumbbell Floor Press',sets:3,reps:'8–10',rest:'75–90 sec',cue:'Shoulders packed, wrists straight, controlled lowering.',equipment:'Mat / Floor',priority:'Primary'},
+{name:'Dead Bug',sets:2,reps:'8–10 each side',rest:'30 sec',cue:'Keep ribs down and lower back steady.',equipment:'Mat / Floor',priority:'Accessory'}
 ]},
-{day:'Tuesday',kind:'strength',focus:'Upper Pull, Posture, Arms & Core',time:'45 min',mission:'Develop upper-back, lat, grip and biceps strength while reinforcing posture and trunk stability.',warm:['March in place — 1 minute','Band pull-aparts — 15','Arm circles — 15 each direction','Cat-Cow — 8','Bird Dog — 6 each side'],cool:['Doorway chest stretch — 30 sec each side','Open-book thoracic rotation — 6 each side','Diaphragmatic breathing — 5 breaths'],ex:[
-{name:'One-Arm Dumbbell Row',sets:4,reps:'8–10 each side',rest:'75 sec',cue:'Pull elbow toward back pocket, pause, do not twist.',equipment:'Dumbbells',priority:'Primary'},
-{name:'Hammer Curl',sets:3,reps:'10–12',rest:'45 sec',cue:'Elbows close, no swinging, lower slowly.',equipment:'Dumbbells',priority:'Accessory'},
-{name:'Rear Delt Fly',sets:3,reps:'12–15',rest:'45 sec',cue:'Soft elbows, lift with rear shoulders, avoid shrugging.',alt:'Band face pull',equipment:'Dumbbells',priority:'Accessory'},
-{name:'Band Lat Pulldown',sets:3,reps:'10–12',rest:'60 sec',cue:'Drive elbows toward ribs, chest lifted, return slowly.',equipment:'Resistance Band',priority:'Primary'},
-{name:'Band Pull-Apart',sets:2,reps:'15',rest:'30 sec',cue:'Shoulders down, squeeze upper back, return slowly.',alt:'Prone Y-T-W raise',equipment:'Resistance Band',priority:'Accessory'},
-{name:'Dead Bug',sets:2,reps:'8–10 each side',rest:'30 sec',cue:'Keep ribs down and lower back steady as limbs extend.',equipment:'Mat / Floor',priority:'Accessory'},
+{day:'Tuesday',kind:'recovery',focus:'Recovery: Yoga + Walking',time:'Recovery day',mission:'Promote recovery with yoga and easy walking. Use the Yoga & Walking tracker below to record one or more sessions.',warm:['No strength warm-up required. Choose activity according to energy, soreness, and recovery.'],cool:['Finish feeling restored rather than trained.'],ex:[
+{name:'Mobility / Reset Work (Optional)',sets:1,time:'5–20 min',recovery:true,optional:true,rest:'',cue:'Use slow, pain-free movement for areas that feel stiff.'}
+]},
+{day:'Wednesday',kind:'strength',focus:'Posterior Chain + Pull + Arms + Core',time:'60–75 min',mission:'Build posterior-chain, back, grip and arm strength while reinforcing posture and anti-rotation core control.',warm:['March in place — 1 minute','Hip hinges — 10','Band pull-aparts — 15','Cat-Cow — 8','Bird Dog — 6 each side','World’s greatest stretch — 5 each side'],cool:['Figure-4 glute stretch — 30 sec each side','Open-book rotation — 6 each side','Lat stretch — 30 sec each side','Slow breathing — 5 breaths'],ex:[
+{name:'Dumbbell Romanian Deadlift',sets:4,reps:'6–8',rest:'2 min',cue:'Brace, hips back, weights close, finish with glutes.',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'One-Arm Dumbbell Row',sets:4,reps:'8–10 each side',rest:'75 sec',cue:'Pull elbow toward back pocket without twisting.',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Bulgarian Split Squat',sets:3,reps:'8 each leg',rest:'90 sec',cue:'Stay tall and drive through the front foot.',alt:'Reverse Lunge',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Hammer Curl',sets:3,reps:'10–12',rest:'45 sec',cue:'Elbows close, no swinging, lower slowly.',equipment:'Standing Dumbbells',priority:'Accessory'},
+{name:'Suitcase Carry',sets:3,time:'45–60 sec each side',rest:'45 sec',cue:'Resist leaning and keep shoulders level.',equipment:'Standing Dumbbells / Carry',priority:'Primary'},
+{name:'Band Lat Pulldown',sets:3,reps:'10–12',rest:'60 sec',cue:'Drive elbows toward ribs and return slowly.',equipment:'Resistance Band',priority:'Primary'},
+{name:'Pallof Press',sets:2,reps:'10 each side',rest:'30–45 sec',cue:'Keep hips and shoulders square; resist rotation.',equipment:'Resistance Band',priority:'Accessory'},
+{name:'Dumbbell Hip Thrust',sets:3,reps:'10–12',rest:'75 sec',cue:'Ribs down, drive through heels, pause at the top.',alt:'Glute Bridge',equipment:'Mat / Floor',priority:'Primary'},
 {name:'Side Plank',sets:2,time:'30–45 sec each side',rest:'30 sec',cue:'Keep hips lifted and body aligned.',equipment:'Mat / Floor',priority:'Accessory'}
 ]},
-{day:'Wednesday',kind:'strength',focus:'Lower Body & Posterior Chain Strength',time:'60 min',mission:'Build strong hips, glutes, hamstrings and legs while reinforcing spinal stability, balance, and carrying strength.',warm:['March in place — 1 minute','Hip hinges — 10','Bodyweight good mornings — 10','Mini-band lateral walk — 10 each direction','Cat-Cow — 8','Bird Dog — 6 each side','World’s greatest stretch — 5 each side'],cool:['Kneeling hip-flexor stretch — 30 sec each side','Figure-4 glute stretch — 30 sec each side','Child’s Pose — 30–45 sec','Diaphragmatic breathing — 5 breaths'],ex:[
-{name:'Dumbbell Romanian Deadlift',sets:4,reps:'6–8',rest:'2 min',cue:'Brace, hips back, weights close, neutral spine, finish with glutes.',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Bulgarian Split Squat',sets:3,reps:'8 each leg',rest:'90 sec',cue:'Stay tall, front knee tracks over toes, drive through front foot.',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Step-Up',sets:3,reps:'8–10 each leg',rest:'75 sec',cue:'Use the lead leg, stand fully, lower slowly and under control.',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Suitcase Carry',sets:3,time:'45–60 sec each side',rest:'45 sec',cue:'Resist leaning, shoulders level, slow steps.',equipment:'Standing Dumbbells / Carry',priority:'Primary'},
-{name:'Rear Delt Fly',sets:2,reps:'12–15',rest:'45 sec',cue:'Lift from rear shoulders, keep neck relaxed, avoid shrugging.',alt:'Band face pull',equipment:'Standing Dumbbells',priority:'Accessory'},
-{name:'Standing Calf Raise',sets:3,reps:'15–20',rest:'30–45 sec',cue:'Rise high, pause briefly, lower slowly through full range.',equipment:'Standing Dumbbells',priority:'Accessory'},
-{name:'Pallof Press',sets:2,reps:'10 each side',rest:'30–45 sec',cue:'Brace, keep hips and shoulders square, and resist rotation.',alt:'Repeat Suitcase Carry if using dumbbells only',equipment:'Resistance Band',priority:'Accessory'},
-{name:'Dumbbell Hip Thrust',sets:3,reps:'10–12',rest:'75 sec',cue:'Ribs down, drive through heels, pause and squeeze glutes at the top.',alt:'Glute Bridge',equipment:'Mat / Floor',priority:'Primary'},
-{name:'Dead Bug',sets:2,reps:'10 each side',rest:'30 sec',cue:'Lower back gently down, exhale as limb extends.',equipment:'Mat / Floor',priority:'Accessory'}
+{day:'Thursday',kind:'recovery',focus:'Recovery: Yoga + Walking',time:'Recovery day',mission:'Use yoga, yin/restorative work, and easy walking to support mobility and recovery. Record each session below.',warm:['No strength warm-up required.'],cool:['Keep the day restorative and comfortable.'],ex:[
+{name:'Mobility / Reset Work (Optional)',sets:1,time:'5–20 min',recovery:true,optional:true,rest:'',cue:'Focus on areas that feel restricted; never force range.'}
 ]},
-{day:'Thursday',kind:'recovery',focus:'Recovery: Yoga, Yin Yoga & Optional Walking',time:'Recovery day',mission:'Recover from strength training with a general yoga practice, a separate yin-yoga practice, and optional walking or mobility work.',warm:['Choose the recovery activities that fit your body today. No strength warm-up is required.'],cool:['Finish feeling calmer, looser, and ready for Friday.'],ex:[
-{name:'Yoga Practice',sets:1,time:'20–60 min',recovery:true,optional:false,rest:'',cue:'Choose a yoga style that matches your energy and recovery needs for the day.',typeLabel:'Yoga type',typeOptions:['Gentle Vinyasa Yoga','Power Yoga','Restorative Yoga','Hatha / General Yoga','Other Yoga']},
-{name:'Yin Yoga Practice',sets:1,time:'20–60 min',recovery:true,optional:false,rest:'',cue:'Use sustained positions at a tolerable intensity and never force a joint.',typeLabel:'Yin type',typeOptions:['Yin Yoga','Restorative Yin Yoga','Gentle Yin Yoga','Other Yin Practice']},
-{name:'Walking (Optional)',sets:1,time:'10–60 min',recovery:true,optional:true,rest:'',cue:'Keep the pace conversational and restorative rather than demanding.'},
-{name:'Mobility / Reset Work (Optional)',sets:1,time:'5–20 min',recovery:true,optional:true,rest:'',cue:'Focus on areas that feel stiff, using slow, pain-free movement.'}
+{day:'Friday',kind:'strength',focus:'Upper Body Comprehensive + Core',time:'60–75 min',mission:'Train upper-body push and pull comprehensively while keeping leg fatigue modest before Saturday’s lower-body session.',warm:['March in place — 1 minute','Band pull-aparts — 15','Arm circles — 15 each direction','Shoulder rolls — 10 each direction','Scapular push-ups — 10'],cool:['Doorway chest stretch — 30 sec each side','Cross-body shoulder stretch — 30 sec each side','Lat stretch — 30 sec each side','Slow breathing — 5 breaths'],ex:[
+{name:'Standing Dumbbell Overhead Press',sets:3,reps:'6–8',rest:'75–90 sec',cue:'Brace, ribs down, press without leaning back.',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'One-Arm Dumbbell Row',sets:3,reps:'8–10 each side',rest:'75 sec',cue:'Stable torso, elbow toward hip, controlled return.',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Alternating Dumbbell Curl',sets:3,reps:'10 each arm',rest:'45 sec',cue:'Elbows close and control the eccentric.',equipment:'Standing Dumbbells',priority:'Accessory'},
+{name:'Band Face Pull',sets:3,reps:'12–15',rest:'45 sec',cue:'Elbows high, pull toward forehead, avoid shrugging.',equipment:'Resistance Band',priority:'Accessory'},
+{name:'Band Lat Pulldown',sets:3,reps:'10–12',rest:'60 sec',cue:'Drive elbows toward ribs; chest lifted.',equipment:'Resistance Band',priority:'Primary'},
+{name:'Band External Rotation',sets:2,reps:'12–15 each arm',rest:'30 sec',cue:'Elbow tucked; rotate from the shoulder.',equipment:'Resistance Band',priority:'Accessory'},
+{name:'Dumbbell Floor Press',sets:4,reps:'8–10',rest:'75–90 sec',cue:'Shoulders packed, wrists straight, press smoothly.',equipment:'Mat / Floor',priority:'Primary'},
+{name:'Overhead Dumbbell Triceps Extension',sets:3,reps:'10–12',rest:'45 sec',cue:'Keep ribs down and lower under control.',equipment:'Mat / Floor + Dumbbell',priority:'Accessory'},
+{name:'Dead Bug',sets:2,reps:'10 each side',rest:'30 sec',cue:'Exhale as the limb extends; keep trunk steady.',equipment:'Mat / Floor',priority:'Accessory'}
 ]},
-{day:'Friday',kind:'strength',focus:'Upper Push, Posture, Arms & Calves',time:'45 min',mission:'Build upper-body pushing strength while maintaining shoulder balance, posture, arm strength, and lower-leg resilience.',warm:['March in place — 1 minute','Band pull-aparts — 15','Arm circles — 15 each direction','Shoulder rolls — 10 each direction','Scapular push-ups — 10'],cool:['Doorway chest stretch — 30 sec each side','Cross-body shoulder stretch — 30 sec each side','Standing calf stretch — 30 sec each side'],ex:[
-{name:'Standing Dumbbell Overhead Press',sets:3,reps:'6–8',rest:'75–90 sec',cue:'Brace, keep ribs down, and press overhead without leaning back.',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Alternating Dumbbell Curl',sets:2,reps:'10 each arm',rest:'45 sec',cue:'Elbows close, no swinging, control the eccentric.',equipment:'Standing Dumbbells',priority:'Accessory'},
-{name:'Standing Calf Raise',sets:3,reps:'15–20',rest:'30–45 sec',cue:'Rise high, pause, lower slowly through full range.',equipment:'Standing Dumbbells',priority:'Accessory'},
-{name:'Band Face Pull',sets:2,reps:'12–15',rest:'45 sec',cue:'Elbows high, pull toward forehead, avoid shrugging.',alt:'Rear-delt fly',equipment:'Resistance Band',priority:'Accessory'},
-{name:'Band External Rotation',sets:2,reps:'12–15 each arm',rest:'30 sec',cue:'Elbow tucked, rotate from shoulder, torso still.',alt:'Side-lying dumbbell external rotation',equipment:'Resistance Band',priority:'Accessory'},
-{name:'Dumbbell Floor Press',sets:3,reps:'8–10',rest:'75 sec',cue:'Shoulders packed, wrists straight, controlled lowering.',equipment:'Mat / Floor',priority:'Primary'},
-{name:'Push-Up Plus',sets:3,reps:'8–12',rest:'60–75 sec',cue:'Straight body line; at top push floor away to protract shoulder blades.',alt:'Incline push-up plus',equipment:'Mat / Floor',priority:'Accessory'},
-{name:'Overhead Dumbbell Triceps Extension',sets:2,reps:'10–12',rest:'45 sec',cue:'Elbows mostly forward, ribs down, controlled lowering.',equipment:'Mat / Floor + Dumbbell',priority:'Accessory'}
-]},
-{day:'Saturday',kind:'strength',focus:'Full-Body Functional Strength & Performance',time:'60 min',mission:'Integrate strength, coordination, stability, carries, balance, and whole-body movement into one comprehensive session without repeating Friday’s pressing volume.',warm:['March in place — 1 minute','Bodyweight squats — 10','Hip hinges — 10','World’s greatest stretch — 5 each side','Arm circles — 15 each direction','Bird Dog — 6 each side','Scapular push-ups — 10'],cool:['Figure-4 glute stretch — 30 sec each side','Doorway chest stretch — 30 sec each side','Child’s Pose — 30–45 sec','Diaphragmatic breathing — 5 breaths'],ex:[
-{name:'Double-Dumbbell Front Squat',sets:4,reps:'6–8',rest:'90–120 sec',cue:'Rack dumbbells securely, brace, sit between the hips, and drive through the whole foot.',alt:'Goblet Squat if double-dumbbell loading is not yet comfortable',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'Walking Dumbbell Lunge',sets:3,reps:'10 each leg',rest:'75 sec',cue:'Upright torso, controlled stride, push through front foot.',equipment:'Standing Dumbbells',priority:'Primary'},
-{name:'One-Arm Dumbbell Row',sets:3,reps:'8–10 each side',rest:'60–75 sec',cue:'Stable torso, elbow to hip, controlled return.',equipment:'Standing Dumbbells',priority:'Primary'},
+{day:'Saturday',kind:'strength',focus:'Lower Body Comprehensive + Functional Strength',time:'60–75 min',mission:'Finish the strength week with lower-body, unilateral, carrying, balance and functional work while avoiding another high-volume upper-body session.',warm:['March in place — 1 minute','Bodyweight squats — 10','Hip hinges — 10','World’s greatest stretch — 5 each side','Bird Dog — 6 each side','Ankle rocks — 10 each side'],cool:['Figure-4 glute stretch — 30 sec each side','Kneeling hip-flexor stretch — 30 sec each side','Standing calf stretch — 30 sec each side','Child’s Pose — 30–45 sec'],ex:[
+{name:'Double-Dumbbell Front Squat',sets:4,reps:'6–8',rest:'90–120 sec',cue:'Brace, sit between the hips, drive through the whole foot.',alt:'Goblet Squat',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Step-Up',sets:3,reps:'8–10 each leg',rest:'75 sec',cue:'Use the lead leg and lower slowly.',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Single-Leg Dumbbell Romanian Deadlift',sets:3,reps:'8 each leg',rest:'75 sec',cue:'Hinge from the hip, keep pelvis square, move under control.',alt:'Staggered-Stance RDL',equipment:'Standing Dumbbells',priority:'Primary'},
+{name:'Walking Dumbbell Lunge',sets:3,reps:'8–10 each leg',rest:'75 sec',cue:'Upright torso, controlled stride, push through front foot.',alt:'Reverse Lunge',equipment:'Standing Dumbbells',priority:'Primary'},
 {name:'Farmer Carry',sets:3,time:'60 sec',rest:'60 sec',cue:'Tall posture, level shoulders, smooth breathing.',equipment:'Standing Dumbbells / Carry',priority:'Primary'},
-{name:'Single-Leg Balance Reach',sets:2,reps:'8 each leg',rest:'30 sec',cue:'Reach slowly and return under control.',equipment:'Standing / Bodyweight',priority:'Accessory'},
-{name:'Band Lat Pulldown',sets:3,reps:'10–12',rest:'60 sec',cue:'Drive elbows toward ribs, keep chest lifted, and return slowly.',equipment:'Resistance Band',priority:'Primary'},
-{name:'Partial Turkish Get-Up',sets:2,reps:'3 each side',rest:'60 sec',cue:'Move step by step and keep the shoulder stable.',alt:'Full Turkish Get-Up when ready',equipment:'Mat / Floor + Dumbbell',priority:'Accessory'},
-{name:'Renegade Row',sets:2,reps:'6–8 each side',rest:'60 sec',cue:'Keep hips square and row without twisting.',alt:'Plank dumbbell drag or One-Arm Row',equipment:'Mat / Floor + Dumbbells',priority:'Accessory'},
-{name:'Bear Crawl',sets:2,time:'20–30 sec',rest:'45 sec',cue:'Knees hover low, opposite hand and foot move together, hips level.',equipment:'Mat / Floor',priority:'Accessory'}
+{name:'Standing Calf Raise',sets:3,reps:'15–20',rest:'30–45 sec',cue:'Rise high, pause, lower through full range.',equipment:'Standing Dumbbells',priority:'Accessory'},
+{name:'Pallof Press',sets:2,reps:'10 each side',rest:'30–45 sec',cue:'Brace and resist rotation.',equipment:'Resistance Band',priority:'Accessory'},
+{name:'Partial Turkish Get-Up',sets:2,reps:'3 each side',rest:'60 sec',cue:'Move step by step and keep the shoulder stable.',equipment:'Mat / Floor + Dumbbell',priority:'Accessory'},
+{name:'Bird Dog',sets:2,reps:'8 each side',rest:'30 sec',cue:'Reach long and keep hips level.',equipment:'Mat / Floor',priority:'Accessory'}
 ]},
-{day:'Sunday',kind:'recovery',focus:'Recovery: Yoga, Yin Yoga & Optional Walking',time:'Recovery day',mission:'Use yoga and yin yoga to restore movement quality, with optional walking or mobility work before Monday.',warm:['Choose the recovery activities that match your energy and soreness today.'],cool:['Finish feeling restored rather than trained.'],ex:[
-{name:'Yoga Practice',sets:1,time:'20–60 min',recovery:true,optional:false,rest:'',cue:'Choose Gentle Vinyasa, Power, Restorative, Hatha/general yoga, or another style based on your body today.',typeLabel:'Yoga type',typeOptions:['Gentle Vinyasa Yoga','Power Yoga','Restorative Yoga','Hatha / General Yoga','Other Yoga']},
-{name:'Yin Yoga Practice',sets:1,time:'20–60 min',recovery:true,optional:false,rest:'',cue:'Choose a yin practice that supports recovery. It may be restorative, but does not have to be.',typeLabel:'Yin type',typeOptions:['Yin Yoga','Restorative Yin Yoga','Gentle Yin Yoga','Other Yin Practice']},
-{name:'Walking (Optional)',sets:1,time:'10–60 min',recovery:true,optional:true,rest:'',cue:'Keep the walk easy or conversational unless you intentionally want more activity.'},
-{name:'Mobility / Reset Work (Optional)',sets:1,time:'5–20 min',recovery:true,optional:true,rest:'',cue:'Use only as needed for areas that feel stiff or restricted.'}
+{day:'Sunday',kind:'recovery',focus:'Recovery: Yoga + Walking',time:'Recovery day',mission:'Use yoga and walking to restore movement quality and arrive at Monday recovered. Record multiple sessions if you do them.',warm:['No strength warm-up required.'],cool:['Finish feeling calmer and ready for the coming week.'],ex:[
+{name:'Mobility / Reset Work (Optional)',sets:1,time:'5–20 min',recovery:true,optional:true,rest:'',cue:'Use only if helpful for stiffness or mobility.'}
 ]}
-];
+]
 const KEY='strengthTrackerLocalV1';let activeDay=0;let currentExercises=[];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 function isoToday(){const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
@@ -486,10 +474,22 @@ async function importDataFile(e){const f=e.target.files[0];if(!f)return;try{cons
 window.StrengthCompanion={
   getRecords: records,
   setRecords: items=>setRecords(Array.isArray(items)?items:[]),
-  refresh: ()=>{renderDashboard();renderHistory();renderProgress();},
-  refreshPassive: ()=>renderDashboard(),
+  refresh: ()=>{renderDashboard();renderHistory();renderProgress();renderWorkout(false);},
+  refreshPassive: ()=>{renderDashboard();renderHistory();renderProgress();},
+  refreshFromCloud: (changedIds=[])=>{
+    renderDashboard();renderHistory();renderProgress();
+    const currentId=recordId(PROGRAM[activeDay].day,workoutDateEl()?.value||isoToday());
+    if(!changedIds.includes(currentId))return;
+    const editing=['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
+    if(editing){
+      setTimeout(()=>{
+        const stillEditing=['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
+        if(!stillEditing)loadSaved(false);
+      },1200);
+    }else loadSaved(false);
+  },
   exportBackup: exportData
-};
+}
 
 function init(){
  try{renderDashboard()}catch(e){console.error('Initial dashboard error',e)}

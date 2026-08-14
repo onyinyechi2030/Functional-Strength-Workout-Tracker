@@ -27,35 +27,61 @@ function workoutsCollection(){return sdk.collection(db,'users',user.uid,'workout
 async function writeRecord(r){await sdk.setDoc(sdk.doc(db,'users',user.uid,'workouts',r.id),r,{merge:false});}
 async function cloudRecords(){const snap=await sdk.getDocs(workoutsCollection());return snap.docs.map(d=>d.data());}
 async function uploadAll(records=localRecords()){if(!user)throw new Error('Sign in first.');await Promise.all(records.map(writeRecord));return records.length;}
-async function reconcileFromLocal(){if(!user||!cloudReady||applyingCloud)return;try{status('syncing','Synchronizing','Saving local changes to the cloud…');const locals=localRecords();const remote=await cloudRecords();const remoteIds=new Set(remote.map(r=>r.id));await uploadAll(locals);const localIds=new Set(locals.map(r=>r.id));await Promise.all([...remoteIds].filter(id=>!localIds.has(id)).map(id=>sdk.deleteDoc(sdk.doc(db,'users',user.uid,'workouts',id))));status('ready','Automatic sync active',`${locals.length} records are current.`);}catch(e){status('error','Sync error',e.message);message('syncMessage',e.message);}}
+async function reconcileFromLocal(){
+  if(!user||!cloudReady||applyingCloud)return;
+  try{
+    status('syncing','Synchronizing','Saving local changes to the cloud…');
+    const locals=localRecords();
+    await uploadAll(locals);
+    status('ready','Automatic sync active',`${locals.length} records saved to cloud.`);
+  }catch(e){
+    status('error','Sync error',e.message);
+    message('syncMessage',e.message);
+  }
+}
 async function startCloud(){
   if(unsubscribe){unsubscribe();unsubscribe=null}
   const ref=workoutsCollection();
-  // Push any existing local history once when cloud sync starts. Do not re-upload
-  // from inside the snapshot listener, which can create an echo/rerender loop.
-  try{await uploadAll(localRecords())}catch(e){status('error','Initial cloud upload error',e.message)}
-  unsubscribe=sdk.onSnapshot(ref,async snap=>{
+  try{
+    // Merge cloud and local BEFORE writing anything. This prevents a newly opened
+    // device with stale local data from overwriting a newer workout from another device.
+    const main=await waitForApi();
+    const remote=await cloudRecords();
+    const local=localRecords();
+    const merged=mergeRecords(local,remote);
+    applyingCloud=true;
+    main.setRecords(merged);
+    applyingCloud=false;
+    await uploadAll(merged);
+    main.refreshPassive?.();
+    cloudReady=true;
+  }catch(e){
+    applyingCloud=false;
+    status('error','Initial cloud merge error',e.message);
+  }
+
+  unsubscribe=sdk.onSnapshot(ref,{includeMetadataChanges:true},async snap=>{
     try{
+      // Ignore snapshots that consist only of this device's pending local writes.
+      if(snap.metadata?.hasPendingWrites){
+        status('syncing','Synchronizing','Saving changes…');
+        return;
+      }
       const remote=snap.docs.map(d=>d.data());
       const local=localRecords();
+      const localMap=new Map(local.map(x=>[x.id,JSON.stringify(x)]));
       const merged=mergeRecords(local,remote);
-      // A local save is echoed back by Firestore. If the merged result is identical
-      // to what is already in local storage, do nothing. In particular, do not call
-      // app.refresh(), because that rebuilds the workout form and steals keyboard focus.
-      const localJson=JSON.stringify(local);
-      const mergedJson=JSON.stringify(merged);
-      if(localJson!==mergedJson){
+      const changedIds=merged.filter(x=>localMap.get(x.id)!==JSON.stringify(x)).map(x=>x.id);
+      if(changedIds.length){
         applyingCloud=true;
         const main=await waitForApi();
         main.setRecords(merged);
         applyingCloud=false;
-        // Refresh passive views only when genuinely new/changed remote data arrived.
-        // Preserve the actively edited workout DOM and keyboard focus.
-        main.refreshPassive?.();
+        main.refreshFromCloud?.(changedIds);
       }
       cloudReady=true;
-      status('ready','Automatic sync active',`${merged.length} records available on this device.`);
-      message('syncMessage','Changes save locally and synchronize automatically while you are signed in.');
+      status('ready','Automatic sync active',`${merged.length} records current · synced just now.`);
+      message('syncMessage','Strength, yoga, walking, History, Progress, and Dashboard synchronize automatically while signed in.');
     }catch(e){
       applyingCloud=false;
       status('error','Sync error',e.message);
