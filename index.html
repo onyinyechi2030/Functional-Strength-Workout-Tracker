@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b7d78">
+<title>Strength Companion</title>
+<link rel="stylesheet" href="styles.css?v=6.0.6">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-today" viewBox="0 0 24 24"><path d="M3 9v6M6.5 6.5v11M17.5 6.5v11M21 9v6M6.5 12h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-overview" viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M12 7v5l3 2M4 12a8 8 0 1 0 2.4-5.7M4 4v3.5h3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-progress" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M15 7h6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M9 14v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><h1>Strength Companion</h1></div>
+    <nav class="tabs" aria-label="Main">
+      <button type="button" class="tab active" data-view="workout"><svg class="ic" aria-hidden="true"><use href="#i-today"/></svg><span>Today</span></button>
+      <button type="button" class="tab" data-view="dashboard"><svg class="ic" aria-hidden="true"><use href="#i-overview"/></svg><span>Overview</span></button>
+      <button type="button" class="tab" data-view="history"><svg class="ic" aria-hidden="true"><use href="#i-history"/></svg><span>History</span></button>
+      <button type="button" class="tab" data-view="progress"><svg class="ic" aria-hidden="true"><use href="#i-progress"/></svg><span>Progress</span></button>
+      <button type="button" class="tab" data-view="settings"><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg><span>Settings</span></button>
+    </nav>
+    <button type="button" id="syncChip" class="sync-chip" data-state="local" aria-label="Cloud sync status. Open sync settings"><i aria-hidden="true"></i><span>Local only</span></button>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================== TODAY ============================== -->
+<section id="workout" class="view active" aria-label="Today">
+
+  <div class="day-head">
+    <div class="day-id">
+      <div id="summary" class="day-meta"></div>
+      <h2 id="dayTitle"></h2>
+      <p id="dayFocus" class="day-focus"></p>
+    </div>
+    <details class="menu" id="dayMenu">
+      <summary aria-label="More actions"><svg class="ic" aria-hidden="true"><use href="#i-more"/></svg></summary>
+      <div class="menu-pop">
+        <button type="button" id="startToday" class="menu-item">Go to today</button>
+        <div id="strengthQuickActions">
+          <button type="button" id="markAllSets" class="menu-item">Mark every set complete</button>
+          <button type="button" id="clearAllSets" class="menu-item danger">Clear all set entries</button>
+        </div>
+        <button type="button" id="loadWorkout" class="menu-item">Reload saved entry for this date</button>
+        <button type="button" id="clearWorkout" class="menu-item danger">Clear this form</button>
+      </div>
+    </details>
+  </div>
+
+  <div class="week-nav">
+    <div class="date-row">
+      <button type="button" id="prevDay" class="icon-btn" aria-label="Previous day">&#8249;</button>
+      <input id="workoutDate" type="date" aria-label="Workout date">
+      <button type="button" id="nextDay" class="icon-btn" aria-label="Next day">&#8250;</button>
+    </div>
+    <div id="daybar" class="daybar" aria-label="Days this week"></div>
+  </div>
+  <p id="dateDayNotice" class="date-day-notice" hidden></p>
+
+  <details class="fold" id="aboutDay">
+    <summary>About this session</summary>
+    <div class="fold-body">
+      <p id="mission" class="muted"></p>
+      <div id="programLegend" class="program-legend">
+        <span><b>Primary</b> sets are the essential work and set the completion standard.</span>
+        <span><b>Accessory</b> sets are supporting work; skipping them never lowers completion.</span>
+      </div>
+    </div>
+  </details>
+
+  <details class="fold" id="weeklyScheduleCard">
+    <summary>Weekly schedule</summary>
+    <div class="fold-body">
+      <p class="muted" id="scheduleDescription"></p>
+      <div class="schedule-grid">
+        <label>Strength A<select id="slotADay"></select></label>
+        <label>Strength B<select id="slotBDay"></select></label>
+        <label id="slotCLabel">Strength C <span class="muted">(optional)</span><select id="slotCDay"></select></label>
+        <label id="slotDLabel">Strength D <span class="muted">(optional)</span><select id="slotDDay"></select></label>
+      </div>
+      <div class="actions">
+        <button type="button" id="applyWeekSchedule" class="primary">Apply to this week</button>
+        <button type="button" id="saveDefaultSchedule" class="secondary">Make this my default</button>
+        <button type="button" id="resetWeekSchedule" class="secondary">Reset this week</button>
+      </div>
+      <p id="scheduleStatus" class="muted"></p>
+    </div>
+  </details>
+
+  <details id="warmupCard" class="fold">
+    <summary>Warm-up</summary>
+    <div class="fold-body"><ul id="warmup" class="list"></ul></div>
+  </details>
+
+  <div id="exerciseList"></div>
+
+  <details class="fold" id="recommendationsCard">
+    <summary>If you have time and energy</summary>
+    <div class="fold-body">
+      <p class="muted">The Primary work is already enough. These add useful volume when recovery is good.</p>
+      <div id="optionalRecommendations"></div>
+    </div>
+  </details>
+
+  <details id="customExerciseCard" class="fold">
+    <summary>Add an exercise</summary>
+    <div class="fold-body">
+      <p class="muted">Log a substitution, a library exercise, or anything else you did. Use up to three slots.</p>
+      <div class="custom-grid">
+        <div class="custom-form" data-slot="1"><div class="name"><label>Exercise</label><select class="customExercise" aria-label="Exercise"></select></div><div class="manual-name" hidden><label>Exercise name</label><input class="customName" placeholder="Enter exercise name"></div><div><label>Sets</label><select class="customSets" aria-label="Sets"></select></div><div><label>Weight</label><select class="customWeight" aria-label="Weight"></select></div><div><label>Reps</label><select class="customReps" aria-label="Reps"></select></div><div><label>Time</label><select class="customTime" aria-label="Time"></select></div><button type="button" class="secondary addCustom">Add exercise</button></div>
+        <div class="custom-form" data-slot="2"><div class="name"><label>Exercise</label><select class="customExercise" aria-label="Exercise"></select></div><div class="manual-name" hidden><label>Exercise name</label><input class="customName" placeholder="Enter exercise name"></div><div><label>Sets</label><select class="customSets" aria-label="Sets"></select></div><div><label>Weight</label><select class="customWeight" aria-label="Weight"></select></div><div><label>Reps</label><select class="customReps" aria-label="Reps"></select></div><div><label>Time</label><select class="customTime" aria-label="Time"></select></div><button type="button" class="secondary addCustom">Add exercise</button></div>
+        <div class="custom-form" data-slot="3"><div class="name"><label>Exercise</label><select class="customExercise" aria-label="Exercise"></select></div><div class="manual-name" hidden><label>Exercise name</label><input class="customName" placeholder="Enter exercise name"></div><div><label>Sets</label><select class="customSets" aria-label="Sets"></select></div><div><label>Weight</label><select class="customWeight" aria-label="Weight"></select></div><div><label>Reps</label><select class="customReps" aria-label="Reps"></select></div><div><label>Time</label><select class="customTime" aria-label="Time"></select></div><button type="button" class="secondary addCustom">Add exercise</button></div>
+      </div>
+    </div>
+  </details>
+
+  <details id="cooldownCard" class="fold">
+    <summary>Cool-down</summary>
+    <div class="fold-body"><ul id="cooldown" class="list"></ul></div>
+  </details>
+
+  <section class="block" aria-labelledby="movementHead">
+    <h3 id="movementHead">Movement and mindfulness</h3>
+    <p class="muted block-note">Log as many short sessions as you like. These count toward your activity goals, not strength completion.</p>
+
+    <div id="dailyActivityCard" class="practice-group">
+      <details class="practice">
+        <summary><span class="practice-name">Yoga and mobility</span><b id="dailyYogaTotal" class="practice-total">0 min</b></summary>
+        <div class="practice-body">
+          <div id="yogaSessions"></div>
+          <button type="button" id="addYogaSession" class="add-btn"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Add session</button>
+        </div>
+      </details>
+      <details class="practice">
+        <summary><span class="practice-name">Walking</span><b id="dailyWalkingTotal" class="practice-total">0 min</b></summary>
+        <div class="practice-body">
+          <div id="walkingSessions"></div>
+          <button type="button" id="addWalkingSession" class="add-btn"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Add session</button>
+        </div>
+      </details>
+    </div>
+
+    <div id="mindfulnessActivityCard" class="practice-group">
+      <details class="practice">
+        <summary><span class="practice-name">Breathing</span><b id="dailyBreathingTotal" class="practice-total">0 min</b></summary>
+        <div class="practice-body">
+          <div id="breathingSessions"></div>
+          <button type="button" id="addBreathingSession" class="add-btn"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Add session</button>
+        </div>
+      </details>
+      <details class="practice">
+        <summary><span class="practice-name">Meditation</span><b id="dailyMeditationTotal" class="practice-total">0 min</b></summary>
+        <div class="practice-body">
+          <div id="meditationSessions"></div>
+          <button type="button" id="addMeditationSession" class="add-btn"><svg class="ic" aria-hidden="true"><use href="#i-plus"/></svg>Add session</button>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="wrapHead">
+    <h3 id="wrapHead">Wrap up</h3>
+    <div class="session">
+      <div><label for="totalMinutes">Strength minutes</label><input id="totalMinutes" type="number" min="0" inputmode="numeric" placeholder="e.g. 60"></div>
+      <div id="rpeField"><label for="rpe">Effort (1–10)</label><input id="rpe" type="number" min="1" max="10" inputmode="numeric"></div>
+      <div><label for="energyBefore">Energy before (1–10)</label><input id="energyBefore" type="number" min="1" max="10" inputmode="numeric"></div>
+      <div><label for="energyAfter">Energy after (1–10)</label><input id="energyAfter" type="number" min="1" max="10" inputmode="numeric"></div>
+      <div class="wide"><label for="notes">Notes</label><textarea id="notes" placeholder="Technique, pain, energy, substitutions, progress"></textarea></div>
+    </div>
+    <div class="progressbar visually-hidden-bar"><span id="completionBar"></span></div>
+    <p id="completionText" class="muted wrap-status"></p>
+    <div class="actions">
+      <button type="button" id="finishWorkout" class="secondary">Save and show summary</button>
+    </div>
+    <div id="completionSummary" class="summary-note" role="status"></div>
+  </section>
+
+  <div class="savebar" role="region" aria-label="Workout progress">
+    <div class="savebar-in">
+      <div class="savebar-progress">
+        <strong id="topCompletionText">Primary 0 of 0 sets</strong>
+        <div class="progressbar"><span id="topCompletionBar"></span></div>
+      </div>
+      <button type="button" id="saveWorkout" class="primary">Save day</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================== OVERVIEW ============================== -->
+<section id="dashboard" class="view" aria-label="Overview">
+  <h2 class="page-title">This week</h2>
+
+  <div class="kpis">
+    <div class="kpi"><span>Strength sessions</span><b id="dashStreak">0/2</b><small id="requiredStrengthNote"></small></div>
+    <div class="kpi"><span>Primary sets</span><b id="dashWeekCompletion">0%</b><small id="dashWeekCompletionDetail"></small></div>
+    <div class="kpi"><span>Active time</span><b id="dashTotalMinutes">0 min</b><small>All activities combined</small></div>
+  </div>
+
+  <section class="block">
+    <h3>Time by activity</h3>
+    <ul class="minutes-list" id="dashMinutes">
+      <li data-k="strength"><span>Strength</span><i><u></u></i><b id="dashStrengthMinutes">0 min</b></li>
+      <li data-k="yoga"><span>Yoga and mobility</span><i><u></u></i><b id="dashYogaMinutes">0 min</b></li>
+      <li data-k="walking"><span>Walking</span><i><u></u></i><b id="dashWalkingMinutes">0 min</b></li>
+      <li data-k="breathing"><span>Breathing</span><i><u></u></i><b id="dashBreathingMinutes">0 min</b></li>
+      <li data-k="meditation"><span>Meditation</span><i><u></u></i><b id="dashMeditationMinutes">0 min</b></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h3>Activity goals</h3>
+    <div id="activityGoalsSummary" aria-live="polite"></div>
+  </section>
+
+  <section class="block">
+    <h3>Recent personal bests</h3>
+    <div id="dashboardPRs" class="pr-list"></div>
+  </section>
+
+  <details class="fold">
+    <summary>Strength details</summary>
+    <div class="fold-body">
+      <div class="kpis kpis-small">
+        <div class="kpi"><span>Month consistency</span><b id="dashMonthCompletion">0%</b><small id="dashMonthCompletionDetail"></small></div>
+        <div class="kpi" id="optionalDStat"><span>Optional Strength C</span><b id="dashOptionalD">Not completed</b><small>Bonus session; never lowers your target</small></div>
+      </div>
+      <div id="strengthSummary" aria-live="polite"></div>
+    </div>
+  </details>
+
+  <details class="fold">
+    <summary>Weekly history</summary>
+    <div class="fold-body">
+      <p id="dashboardDataStatus" class="muted"></p>
+      <div id="weeklyTimeHistory"></div>
+    </div>
+  </details>
+</section>
+
+<!-- ============================== HISTORY ============================== -->
+<section id="history" class="view" aria-label="History">
+  <h2 class="page-title">History</h2>
+  <div class="search-row"><label for="historySearch">Search</label><input id="historySearch" type="search" placeholder="Notes, exercises, activities or dates" autocomplete="off"></div>
+  <div class="filter-row">
+    <div><label for="activityFilter">Show</label>
+      <select id="activityFilter">
+        <option value="all">All activity</option>
+        <option value="strength">Strength</option>
+        <option value="yogaMobility">Yoga and mobility</option>
+        <option value="walking">Walking</option>
+        <option value="breathing">Breathing</option>
+        <option value="meditation">Meditation</option>
+      </select>
+    </div>
+    <div><label for="periodFilter">Period</label>
+      <select id="periodFilter">
+        <option value="all">All time</option>
+        <option value="week">This week</option>
+        <option value="month">This month</option>
+        <option value="12weeks">Last 12 weeks</option>
+      </select>
+    </div>
+  </div>
+  <details class="fold">
+    <summary>More filters</summary>
+    <div class="fold-body">
+      <div class="filters">
+        <div><label for="fromDate">From</label><input id="fromDate" type="date"></div>
+        <div><label for="toDate">To</label><input id="toDate" type="date"></div>
+        <div><label for="dayFilter">Weekday</label><select id="dayFilter"><option value="">All days</option></select></div>
+      </div>
+    </div>
+  </details>
+  <div class="filter-reset"><button type="button" id="resetFilters" class="link-btn">Reset filters</button></div>
+  <p id="historyCaption" class="muted" role="status"></p>
+  <div id="historyStats" class="stats"></div>
+  <div id="historyList"></div>
+</section>
+
+<!-- ============================== PROGRESS ============================== -->
+<section id="progress" class="view" aria-label="Progress">
+  <h2 class="page-title">Progress</h2>
+  <section class="block">
+    <div class="block-head">
+      <h3>Weekly Primary completion</h3>
+      <select id="chartPeriod" aria-label="Chart period"><option value="12">Last 12 weeks</option><option value="24">Last 24 weeks</option><option value="52">Last 52 weeks</option></select>
+    </div>
+    <div class="chart-wrap" tabindex="0" role="region" aria-label="Weekly consistency chart (scrolls sideways)"><div id="consistencyChart" class="chart"></div></div>
+    <p id="chartSummary" class="chart-summary" aria-live="polite"></p>
+  </section>
+  <section class="block">
+    <div class="block-head">
+      <h3>Exercise progression</h3>
+      <select id="exerciseFilter" aria-label="Exercise"></select>
+    </div>
+    <div id="exerciseSummary" class="stats ex-summary" aria-live="polite"></div><div id="exerciseProgress" tabindex="0" role="region" aria-label="Exercise progress table"></div>
+  </section>
+</section>
+
+<!-- ============================== SETTINGS ============================== -->
+<section id="settings" class="view" aria-label="Settings">
+  <h2 class="page-title">Settings</h2>
+  <div class="seg" role="group" aria-label="Settings sections">
+    <button type="button" class="seg-btn active" data-pane="goals">Goals</button>
+    <button type="button" class="seg-btn" data-pane="cloud">Cloud sync</button>
+    <button type="button" class="seg-btn" data-pane="backup">Backup</button>
+    <button type="button" class="seg-btn" data-pane="about">About</button>
+  </div>
+
+  <div id="goals" class="pane active">
+    <section class="block">
+      <h3>Weekly activity goals</h3>
+      <p class="muted block-note">Set days per week and total minutes per week for each activity. Leave a field blank for no target. Any session length counts.</p>
+      <div id="activityGoalsFields" class="activity-goals-fields"></div>
+      <p id="goalsEffectiveNote" class="muted"></p>
+      <div class="actions"><button type="button" id="saveActivityGoals" class="primary">Save goals</button></div>
+      <p id="activityGoalsStatus" class="muted" role="status"></p>
+      <p id="activityGoalsHistory" class="muted"></p>
+      <p class="muted fine">Changes apply going forward. Earlier weeks keep the goals that were in effect then.</p>
+    </section>
+  </div>
+
+  <div id="cloud" class="pane">
+    <section class="block">
+      <h3>Cloud sync</h3>
+      <p class="muted block-note">Your history lives in this browser first. Sign in to Firebase to keep your devices in step.</p>
+      <div id="cloudStatus" class="cloud-status local"><b>Local only</b><span>Cloud sync is not configured.</span></div>
+      <div class="migration-box">
+        <div><strong>Safety backup</strong><p id="migrationStatus" class="muted">Checking saved records…</p></div>
+        <button id="cloudExportBackup" type="button" class="secondary">Export backup</button>
+      </div>
+    </section>
+
+    <details class="fold" id="cfgStep" open>
+      <summary>Step 1: Firebase configuration</summary>
+      <div class="fold-body">
+        <p class="muted">Paste the <code>const firebaseConfig = { ... };</code> block from Firebase Project Settings.</p>
+        <textarea id="firebaseConfigBlock" spellcheck="false" placeholder='const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...firebaseapp.com",
+  projectId: "...",
+  storageBucket: "...firebasestorage.app",
+  messagingSenderId: "...",
+  appId: "..."
+};'></textarea>
+        <div class="actions">
+          <button id="saveFirebaseConfig" type="button" class="primary">Save configuration</button>
+          <button id="clearFirebaseConfig" type="button" class="secondary">Remove</button>
+        </div>
+        <p id="configMessage" class="muted"></p>
+      </div>
+    </details>
+
+    <details class="fold" id="signinStep" open>
+      <summary>Step 2: Sign in</summary>
+      <div class="fold-body">
+        <div class="actions"><button id="googleSignIn" type="button" class="primary">Continue with Google</button></div>
+        <div class="auth-grid">
+          <div><label for="cloudEmail">Email</label><input id="cloudEmail" type="email" autocomplete="email"></div>
+          <div><label for="cloudPassword">Password</label><input id="cloudPassword" type="password" autocomplete="current-password"></div>
+        </div>
+        <div class="actions">
+          <button id="emailSignIn" type="button" class="secondary">Sign in</button>
+          <button id="createAccount" type="button" class="secondary">Create account</button>
+          <button id="resetPassword" type="button" class="secondary">Reset password</button>
+          <button id="signOutCloud" type="button" class="dangerbtn">Sign out</button>
+        </div>
+        <p id="authMessage" class="muted"></p>
+      </div>
+    </details>
+
+    <details class="fold">
+      <summary>Manual sync tools</summary>
+      <div class="fold-body">
+        <p class="muted">Changes sync on their own once you are signed in. Use these only to troubleshoot.</p>
+        <div class="actions">
+          <button id="syncNow" type="button" class="primary">Sync now</button>
+          <button id="uploadLocal" type="button" class="secondary">Upload local history</button>
+          <button id="downloadCloud" type="button" class="secondary">Download and merge</button>
+        </div>
+        <p id="syncMessage" class="muted"></p>
+      </div>
+    </details>
+  </div>
+
+  <div id="backup" class="pane">
+    <section class="block">
+      <h3>Backup and restore</h3>
+      <p class="muted block-note">Your records are stored in this browser. Export a backup now and then so you can restore them if browser data is cleared or you change computers.</p>
+      <div class="actions">
+        <button type="button" id="exportData" class="primary">Export backup</button>
+        <label class="filelabel">Import backup<input id="importData" type="file" accept="application/json"></label>
+      </div>
+      <p id="backupStatus" class="muted" role="status"></p>
+    </section>
+    <section class="block danger-zone">
+      <h3>Delete all data</h3>
+      <p class="muted block-note">Removes every workout and activity record from this browser. Export a backup first. This cannot be undone.</p>
+      <div class="actions"><button type="button" id="deleteAll" class="dangerbtn">Delete all data</button></div>
+    </section>
+  </div>
+
+  <div id="about" class="pane">
+    <section class="block">
+      <h3>About</h3>
+      <p><strong>Strength Companion</strong> <span class="version-badge">v6.0.6</span></p>
+      <p class="muted">A two-day full-body A/B program with an optional third session, accessible progressions, daily movement practices, history and cloud sync.</p>
+      <p class="muted">Local-first: records stay in this browser and can optionally sync to Firebase.</p>
+    </section>
+  </div>
+</section>
+
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js?v=6.0.6" defer></script>
+<script src="ui.js?v=6.0.6" defer></script>
+<script type="module" src="firebase-sync.js"></script>
+</body>
+</html>
